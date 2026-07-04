@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { TrendingUp, RefreshCw, CalendarRange, Globe, CheckCircle2 } from 'lucide-react';
+import { TrendingUp, RefreshCw, CalendarRange, Globe } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -69,8 +69,44 @@ export default function RevenueYield() {
 
     let mm = gsap.matchMedia();
 
-    // Desktop: Pin and stack cards one-by-one side-by-side on scroll
+    // Desktop: 2 cards appear per scroll step
     mm.add("(min-width: 1024px)", () => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: container,
+          pin: true,
+          scrub: 0.8,
+          start: 'top top',
+          end: '+=2000',
+          invalidateOnRefresh: true,
+        }
+      });
+
+      if (title) {
+        tl.fromTo(title,
+          { scale: 0.8, opacity: 0.3 },
+          { scale: 1, opacity: 1, duration: 1.0, ease: 'power2.out' },
+          0
+        );
+      }
+
+      // First 2 cards appear together on first scroll
+      tl.fromTo([cardsEl[0], cardsEl[1]],
+        { scale: 0.85, opacity: 0, y: 60 },
+        { scale: 1, opacity: 1, y: 0, stagger: 0.2, duration: 2.0, ease: 'power3.out' },
+        0.5
+      );
+
+      // Second 2 cards appear together on second scroll
+      tl.fromTo([cardsEl[2], cardsEl[3]],
+        { scale: 0.85, opacity: 0, y: 60 },
+        { scale: 1, opacity: 1, y: 0, stagger: 0.2, duration: 2.0, ease: 'power3.out' },
+        3.5
+      );
+    });
+
+    // Mobile: Vertical overlay card stack driven by GSAP on scroll (keeping labels visible)
+    mm.add("(max-width: 1023px)", () => {
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: container,
@@ -89,37 +125,20 @@ export default function RevenueYield() {
         );
       }
 
-      tl.fromTo(cardsEl,
-        { scale: 0.8, opacity: 0, y: 50 },
-        {
-          scale: 1,
-          opacity: 1,
-          y: 0,
-          stagger: 0.25,
-          duration: 2.0,
-          ease: 'power3.out'
-        },
-        '-=0.5'
-      );
-    });
-
-    // Mobile: simple fade in, no pinning
-    mm.add("(max-width: 1023px)", () => {
-      gsap.fromTo(cardsEl,
-        { opacity: 0, y: 30 },
-        {
-          opacity: 1,
-          y: 0,
-          stagger: 0.15,
-          duration: 1.0,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: container,
-            start: 'top 80%',
-            toggleActions: 'play none none none'
-          }
-        }
-      );
+      cardsEl.forEach((card, idx) => {
+        if (idx === 0) return;
+        tl.fromTo(card,
+          { y: '100vh', scale: 0.95 },
+          {
+            y: idx * 42,
+            scale: 1 - (cardsEl.length - idx) * 0.005,
+            opacity: 1,
+            duration: 2.0,
+            ease: 'power2.out'
+          },
+          '-=1.4'
+        );
+      });
     });
 
     return () => {
@@ -131,7 +150,7 @@ export default function RevenueYield() {
     <section 
       ref={containerRef}
       id="revenue-yield" 
-      className="min-h-screen py-24 lg:py-0 lg:h-screen flex flex-col justify-center bg-[#1F2A44] text-[#F0E7D5] relative overflow-hidden select-none border-t border-white/5 scroll-mt-20"
+      className="h-screen flex flex-col justify-center bg-[#1F2A44] text-[#F0E7D5] relative overflow-hidden select-none border-t border-white/5 scroll-mt-20"
     >
       <div className="absolute inset-0 bg-dots-mesh pointer-events-none opacity-5" />
       
@@ -143,87 +162,72 @@ export default function RevenueYield() {
       <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
         
         {/* Header Block */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-6">
           <span className="text-[10px] font-bold text-[#C6A75E] uppercase tracking-[3px] block mb-2">
             04 — REVENUE ENGINE
           </span>
           <h2 
             ref={titleRef}
-            className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tighter text-white uppercase"
+            className="font-display text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white uppercase"
           >
             Revenue Yield Sync
           </h2>
           <div className="w-16 h-[1px] bg-[#F0E7D5]/20 mx-auto mt-4" />
         </div>
 
-        {/* 4 Cards Grid - Applying custom colors, animations, and Poppins font for details */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
-          {cards.map((card) => {
+        {/* 4 Cards Grid - Responsive stack on mobile, grid on desktop */}
+        <div className="relative w-80 h-[380px] lg:h-auto lg:w-full grid grid-cols-1 lg:grid-cols-4 gap-8 mx-auto">
+          {cards.map((card, idx) => {
             const Icon = card.icon;
             return (
               <div 
                 key={card.title}
-                className="yield-card group relative rounded-3xl p-8 flex flex-col justify-between min-h-[320px] transition-all duration-500 hover:-translate-y-2.5 hover:shadow-2xl overflow-hidden lg:opacity-0"
+                className="yield-card absolute lg:relative w-full max-w-[280px] h-60 lg:h-[320px] rounded-3xl p-6 flex flex-col justify-start overflow-hidden lg:opacity-0 border border-white/5 pt-5 gap-2"
                 style={{ 
                   backgroundColor: card.bg, 
                   borderColor: card.border,
-                  borderWidth: '1px'
+                  borderWidth: '1px',
+                  zIndex: idx + 10,
+                  transform: idx === 0 ? 'translateY(0px) scale(1.0)' : 'translateY(100vh) scale(0.95)'
                 }}
               >
-                {/* Top: Icon + Subtitle */}
+                {/* Top: Big Header Title (always visible when stacked) */}
                 <div>
-                  <div 
-                    className="w-12 h-12 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-500 mb-6"
-                    style={{ 
-                      backgroundColor: card.iconBg,
-                      color: card.textColor
-                    }}
-                  >
-                    <Icon className="w-6 h-6" />
-                  </div>
-                  
-                  <span 
-                    className="text-[9px] font-mono tracking-widest uppercase block mb-1 font-bold"
-                    style={{ color: card.subColor }}
-                  >
-                    {card.subtitle}
-                  </span>
-                  
-                  {/* Big Header */}
                   <h3 
-                    className="font-display text-2xl font-black tracking-tighter uppercase leading-none mb-4"
+                    className="font-display text-base lg:text-lg font-black tracking-tighter uppercase leading-none mb-1"
                     style={{ color: card.textColor }}
                   >
                     {card.title}
                   </h3>
+                  <span 
+                    className="text-[7px] font-mono tracking-widest uppercase block font-bold"
+                    style={{ color: card.subColor }}
+                  >
+                    {card.subtitle}
+                  </span>
                 </div>
 
-                {/* Bottom: Description (Poppins Font as requested) */}
+                {/* Middle: Description */}
                 <p 
-                  className="font-poppins text-xs leading-relaxed font-semibold"
+                  className="font-poppins text-[9px] lg:text-xs leading-relaxed font-semibold"
                   style={{ color: card.descColor }}
                 >
                   {card.desc}
                 </p>
+
+                {/* Bottom: Icon */}
+                <div 
+                  className="w-8 h-8 rounded-lg flex items-center justify-center mt-auto shrink-0"
+                  style={{ 
+                    backgroundColor: card.iconBg,
+                    color: card.textColor
+                  }}
+                >
+                  <Icon className="w-4 h-4" />
+                </div>
               </div>
             );
           })}
-        </div>
-
-        {/* Mini stats line */}
-        <div className="flex flex-wrap justify-center gap-8 md:gap-16 pt-8 border-t border-white/5 text-xs text-[#E8DCC8] uppercase tracking-wider font-semibold">
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-[#C6A75E]" />
-            <span>Zero Booking Commissions</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-[#C6A75E]" />
-            <span>Real-time OTA Sync</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-[#C6A75E]" />
-            <span>Seasonal Rate Rule Engine</span>
-          </div>
         </div>
 
       </div>

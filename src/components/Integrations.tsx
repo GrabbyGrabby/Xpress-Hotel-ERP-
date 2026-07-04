@@ -42,8 +42,42 @@ export default function Integrations() {
 
     let mm = gsap.matchMedia();
 
-    // Desktop: Pin and build a 3x3 grid on scroll
+    // Desktop: 4x4 Grid reveal on scroll
     mm.add("(min-width: 1024px)", () => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: container,
+          pin: true,
+          scrub: 0.8,
+          start: 'top top',
+          end: '+=1600',
+          invalidateOnRefresh: true,
+        }
+      });
+
+      if (title) {
+        tl.fromTo(title,
+          { scale: 0.8, opacity: 0.3 },
+          { scale: 1, opacity: 1, duration: 1.0, ease: 'power2.out' }
+        );
+      }
+
+      tl.fromTo(cards,
+        { scale: 0.8, opacity: 0, y: 40 },
+        {
+          scale: 1,
+          opacity: 1,
+          y: 0,
+          stagger: 0.2,
+          duration: 2.0,
+          ease: 'power3.out'
+        },
+        '-=0.5'
+      );
+    });
+
+    // Mobile: GSAP Vertical stacking deck overlay with visible label text positioned at the top
+    mm.add("(max-width: 1023px)", () => {
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: container,
@@ -62,38 +96,20 @@ export default function Integrations() {
         );
       }
 
-      // Populating the grid layout on scroll
-      tl.fromTo(cards,
-        { scale: 0.8, opacity: 0, y: 40 },
-        {
-          scale: 1,
-          opacity: 1,
-          y: 0,
-          stagger: 0.2,
-          duration: 2.0,
-          ease: 'power3.out'
-        },
-        '-=0.5'
-      );
-    });
-
-    // Mobile: Simple scroll reveal fade in, no pinning
-    mm.add("(max-width: 1023px)", () => {
-      gsap.fromTo(cards,
-        { opacity: 0, y: 30 },
-        {
-          opacity: 1,
-          y: 0,
-          stagger: 0.1,
-          duration: 1.0,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: container,
-            start: 'top 80%',
-            toggleActions: 'play none none none'
-          }
-        }
-      );
+      cards.forEach((card, idx) => {
+        if (idx === 0) return;
+        tl.fromTo(card,
+          { y: '100vh', scale: 0.95 },
+          {
+            y: idx * 30,
+            scale: 1 - (cards.length - idx) * 0.003,
+            opacity: 1,
+            duration: 2.0,
+            ease: 'power2.out'
+          },
+          '-=1.4'
+        );
+      });
     });
 
     return () => {
@@ -105,7 +121,7 @@ export default function Integrations() {
     <section 
       ref={containerRef}
       id="integrations" 
-      className="min-h-screen py-24 lg:py-0 lg:h-screen flex flex-col justify-center items-center bg-[#212842] text-[#F0E7D5] transition-colors duration-300 text-left relative overflow-hidden select-none"
+      className="h-screen flex flex-col justify-center items-center bg-[#212842] text-[#F0E7D5] transition-colors duration-300 text-left relative overflow-hidden select-none"
     >
       <div className="absolute inset-0 bg-dots-mesh pointer-events-none opacity-10" />
       
@@ -113,46 +129,48 @@ export default function Integrations() {
       <div className="flex flex-col items-center justify-center w-full max-w-6xl px-6 relative z-20">
         
         {/* Header Title - Centered */}
-        <div className="text-center mb-12">
-          <div className="text-[11px] font-bold uppercase tracking-[3px] text-[#C6A75E] mb-2">
+        <div className="text-center mb-6">
+          <div className="text-[11px] font-bold uppercase tracking-[3px] text-[#C6A75E] mb-1">
             05 — INTEGRATIONS
           </div>
           <h2 
             ref={titleRef}
-            className="font-poppins text-4xl sm:text-6xl lg:text-[4.5vw] font-bold leading-none tracking-tighter text-white uppercase"
+            className="font-display text-3xl sm:text-5xl lg:text-[4.5vw] font-black leading-none tracking-tight text-white uppercase"
           >
             E-Invoice & Channel Sync
           </h2>
-          <div className="w-16 h-[1px] bg-[#F0E7D5]/20 mx-auto mt-4" />
+          <div className="w-16 h-[1px] bg-[#F0E7D5]/20 mx-auto mt-3" />
         </div>
 
-        {/* 4x4/4-Column Grid Layout on Desktop, Auto Wrap Flex on Mobile */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-6xl mx-auto justify-items-center">
-          {integrations.map((item) => {
+        {/* 4-Column Grid Layout on Desktop, Vertical Stack Deck on Mobile */}
+        <div className="relative w-72 h-[380px] lg:h-auto lg:w-full grid grid-cols-1 lg:grid-cols-4 gap-6 justify-items-center mx-auto">
+          {integrations.map((item, idx) => {
             const Icon = item.icon;
             return (
               <div
                 key={item.name}
-                className="integration-card w-full max-w-[280px] h-20 rounded-full shadow-2xl p-2.5 pr-6 flex items-center gap-4 border border-white/5 origin-center shrink-0 lg:opacity-0"
+                className="integration-card absolute lg:relative w-full max-w-[280px] h-32 lg:h-20 rounded-[1.5rem] lg:rounded-full shadow-2xl p-4 lg:p-2.5 flex flex-col lg:flex-row items-center justify-start text-center lg:text-left gap-2 lg:gap-4 border border-white/5 origin-center shrink-0 lg:opacity-0"
                 style={{ 
-                  backgroundColor: item.color
+                  backgroundColor: item.color,
+                  zIndex: idx + 10,
+                  transform: idx === 0 ? 'translateY(0px) scale(1.0)' : 'translateY(100vh) scale(0.95)'
                 }}
               >
-                {/* Left Circle Icon Container */}
-                <div className={`w-14 h-14 rounded-full flex items-center justify-center border shrink-0 ${
-                  item.textColor === 'text-white' ? 'bg-white/20 border-white/20' : 'bg-black/10 border-black/10'
-                }`}>
-                  <Icon className={`w-6 h-6 stroke-[1.5] ${item.textColor}`} />
-                </div>
-
-                {/* Integration Details */}
-                <div className="flex flex-col text-left">
-                  <span className={`font-poppins font-bold text-sm tracking-wider uppercase leading-none ${item.textColor}`}>
+                {/* Text Label: Placed at the top for mobile visibility during stacking, aligned left on desktop */}
+                <div className="flex flex-col text-center lg:text-left order-1 lg:order-2">
+                  <span className={`font-display font-bold text-sm lg:text-sm tracking-wider uppercase leading-none ${item.textColor}`}>
                     {item.name}
                   </span>
-                  <span className={`text-[8px] font-mono opacity-80 uppercase tracking-widest mt-1 font-semibold ${item.textColor}`}>
+                  <span className={`text-[7px] lg:text-[8px] font-mono opacity-80 uppercase tracking-widest mt-1 font-semibold ${item.textColor}`}>
                     INTEGRATION SYNCED
                   </span>
+                </div>
+
+                {/* Circle Icon Container: Placed below text on mobile, left on desktop */}
+                <div className={`w-10 h-10 lg:w-14 lg:h-14 rounded-full flex items-center justify-center border shrink-0 order-2 lg:order-1 ${
+                  item.textColor === 'text-white' ? 'bg-white/20 border-white/20' : 'bg-black/10 border-black/10'
+                }`}>
+                  <Icon className={`w-4 h-4 lg:w-6 lg:h-6 stroke-[1.5] ${item.textColor}`} />
                 </div>
               </div>
             );

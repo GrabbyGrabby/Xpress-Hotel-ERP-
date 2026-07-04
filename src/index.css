@@ -78,16 +78,3 @@ body.dark-mode {
   animation: buildingRise 1.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-@media (max-width: 1023px) {
-  .segment-card {
-    position: absolute !important;
-    top: calc(var(--idx) * 44px) !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s;
-  }
-  .segment-card:hover {
-    transform: translateX(-50%) translateY(-10px) !important;
-    z-index: 100 !important;
-  }
-}

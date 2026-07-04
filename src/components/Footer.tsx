@@ -7,7 +7,7 @@ export default function Footer() {
         
         {/* Brand Column — Left 4 cols */}
         <div className="md:col-span-4 flex flex-col gap-4">
-          <div className="font-display font-bold text-3xl text-[var(--text)] tracking-tighter uppercase select-none">
+          <div className="font-display font-black text-3xl text-[var(--text)] tracking-tight uppercase select-none">
             Xpress Hotel ERP
           </div>
           <p className="text-sm text-[var(--text-secondary)] leading-relaxed max-w-sm">

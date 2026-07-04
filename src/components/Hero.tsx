@@ -107,7 +107,7 @@ export default function Hero() {
         <div className="max-w-xl z-10 mb-8 lg:mb-12 mt-24 lg:mt-36">
           <h1 
             ref={leftTitleRef}
-            className="font-display text-[10vw] sm:text-[8vw] lg:text-[5.5vw] font-bold leading-[0.9] tracking-tighter text-[#F0E7D5] uppercase flex flex-col"
+            className="font-display text-[10vw] sm:text-[8vw] lg:text-[5.5vw] font-black leading-[0.9] tracking-tight text-[#F0E7D5] uppercase flex flex-col"
           >
             <span className="overflow-hidden block py-1">
               {splitIntoChars("XPRESS")}
@@ -141,7 +141,7 @@ export default function Hero() {
             <div className="w-7 bg-[#212842] dark:bg-[#F0E7D5] rounded-t-md animate-building-rise" style={{ height: '70%', animationDelay: '0.6s' }} />
           </div>
 
-          <h2 className="font-display text-[6vw] sm:text-[5vw] lg:text-[3vw] font-bold leading-[1.0] tracking-tighter text-[#212842] uppercase flex flex-wrap relative z-10">
+          <h2 className="font-display text-[6vw] sm:text-[5vw] lg:text-[3vw] font-black leading-[1.0] tracking-tight text-[#212842] uppercase flex flex-wrap relative z-10">
             {splitIntoWords("EMERGING HOSPITALITY")}
           </h2>
         </div>
