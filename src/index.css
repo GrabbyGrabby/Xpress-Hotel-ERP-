@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #F0E7D5;         /* Vanilla Cream */
+  --text: #212842;       /* Midnight Indigo */
+  --text-secondary: #1F2A44; /* Navy */
+  --accent: #C6A75E;     /* Soft Gold */
+  --light: #E8DCC8;      /* Warm Beige */
+}
+
+body.dark-mode {
+  --bg: #212842;         /* Midnight Indigo */
+  --text: #F0E7D5;       /* Vanilla Cream */
+  --text-secondary: #E8DCC8; /* Warm Beige */
+  --accent: #C6A75E;     /* Soft Gold */
+  --light: #1F2A44;      /* Navy */
+}
+
+@layer base {
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+@layer utilities {
+  /* Premium scrollbar styles */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--bg);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--text-secondary);
+    border-radius: 9999px;
+    border: 1px solid var(--bg);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--accent);
+  }
+}
+
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.3; transform: scaleY(0.5); }
+  50% { opacity: 1; transform: scaleY(1); }
+}
+
+.animate-scroll-pulse {
+  transform-origin: top;
+  animation: scrollPulse 2s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes buildingRise {
+  0% {
+    height: 0%;
+    opacity: 0;
+  }
+  100% {
+    opacity: 0.25;
+  }
+}
+
+.animate-building-rise {
+  animation: buildingRise 1.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
