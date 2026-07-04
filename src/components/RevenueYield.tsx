@@ -59,7 +59,7 @@ export default function RevenueYield() {
 
         {/* 4 Cards Grid - Big Headers */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
-          {cards.map((card, idx) => {
+          {cards.map((card) => {
             const Icon = card.icon;
             return (
               <div 
