@@ -101,48 +101,54 @@ export default function Segments() {
     const cards = container.querySelectorAll('.segment-card');
     const title = titleRef.current;
 
-    // Timeline for horizontal card stacking deck with faster scrub speed
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: container,
-        pin: true,
-        scrub: 1.0, // Reduced from 1.8 for snappier feedback
-        start: 'top top',
-        end: '+=2500', // Significantly reduced from +=8000 to make scrolling faster
-        invalidateOnRefresh: true,
+    let mm = gsap.matchMedia();
+
+    // Desktop GSAP horizontal fan cards stacking deck
+    mm.add("(min-width: 1024px)", () => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: container,
+          pin: true,
+          scrub: 1.0,
+          start: 'top top',
+          end: '+=2500',
+          invalidateOnRefresh: true,
+        }
+      });
+
+      if (title) {
+        tl.fromTo(title,
+          { scale: 0.8, opacity: 0.3 },
+          { scale: 1, opacity: 1, duration: 1.5, ease: 'power2.out' }
+        );
       }
+
+      cards.forEach((card, idx) => {
+        if (idx === 0) return;
+        tl.fromTo(card,
+          { x: '100vw', scale: 0.9, rotate: idx % 2 === 0 ? 1 : -1 },
+          { 
+            x: idx * 32, 
+            y: 0,
+            scale: 1 - (cards.length - idx) * 0.005, 
+            opacity: 1, 
+            duration: 2.2, 
+            ease: 'power2.out' 
+          },
+          '-=1.4'
+        );
+      });
     });
 
-    // Title entry scaling/fading
-    if (title) {
-      tl.fromTo(title,
-        { scale: 0.8, opacity: 0.3 },
-        { scale: 1, opacity: 1, duration: 1.5, ease: 'power2.out' }
-      );
-    }
-
-    // Staggered horizontal deck stacking
-    cards.forEach((card, idx) => {
-      if (idx === 0) return; // Base card sits in place
-
-      // Slide in from right and land on the stack with a horizontal offset
-      tl.fromTo(card,
-        { x: '100vw', scale: 0.9, rotate: idx % 2 === 0 ? 1 : -1 },
-        { 
-          x: idx * 32, // Horizontal offset stack (32px shift per card to show stack tabs)
-          y: 0,
-          scale: 1 - (cards.length - idx) * 0.005, 
-          opacity: 1, 
-          duration: 2.2, 
-          ease: 'power2.out' 
-        },
-        '-=1.4' // Overlapped entrance timing for a cascading deck feel
-      );
+    // Mobile: clear inline properties and let layout handle centering
+    mm.add("(max-width: 1023px)", () => {
+      cards.forEach((card) => {
+        gsap.set(card, { clearProps: "all" });
+      });
     });
 
     return () => {
-      tl.scrollTrigger?.kill();
-      tl.kill();
+      mm.revert();
     };
   }, []);
 
@@ -150,7 +156,7 @@ export default function Segments() {
     <section 
       ref={containerRef}
       id="segments" 
-      className="h-screen flex flex-col justify-center items-center overflow-hidden bg-[var(--bg)] transition-colors duration-300 relative select-none"
+      className="min-h-screen py-24 lg:py-0 lg:h-screen flex flex-col justify-center items-center overflow-hidden bg-[var(--bg)] transition-colors duration-300 relative select-none"
     >
       <div className="absolute inset-0 bg-dots-mesh pointer-events-none opacity-30" />
       
@@ -164,29 +170,28 @@ export default function Segments() {
           </div>
           <h2 
             ref={titleRef}
-            className="font-poppins text-5xl sm:text-7xl lg:text-[5vw] font-bold leading-none tracking-tighter text-[var(--text)] uppercase"
+            className="font-poppins text-4xl sm:text-6xl lg:text-[5vw] font-bold leading-none tracking-tighter text-[var(--text)] uppercase"
           >
             Segments We Cover
           </h2>
           <div className="w-16 h-[1px] bg-[var(--text)]/20 mx-auto mt-4" />
         </div>
 
-        {/* Horizontal Stacking Deck Container - Perfectly Centered */}
-        {/* Container width accommodates the fanned cards stack (32px * 9 + 256px card width = ~550px) */}
-        <div className="relative w-[320px] h-[320px] sm:w-[560px] sm:h-[340px] mx-auto mt-4">
+        {/* Stacking Deck Container (mobile uses absolute stacking with offset, desktop uses GSAP) */}
+        <div className="relative w-64 h-[650px] lg:w-[560px] lg:h-[340px] mx-auto mt-4">
           {segments.map((segment, idx) => {
             const Icon = segment.icon;
             return (
               <div
                 key={segment.id}
-                // Square cards stacking horizontally inside the container
-                className="segment-card absolute top-0 left-0 w-64 h-64 sm:w-64 sm:h-64 rounded-[2rem] shadow-2xl p-6 flex flex-col justify-center items-center text-center gap-6 border border-white/5"
+                className="segment-card absolute lg:top-0 lg:left-0 w-64 h-64 rounded-[2rem] shadow-2xl p-6 flex flex-col justify-center items-center text-center gap-6 border border-white/5 shrink-0"
                 style={{ 
                   backgroundColor: segment.color,
                   zIndex: idx + 10,
-                  // First card sits at base, others start off-screen
-                  transform: idx === 0 ? 'translateX(0px) scale(1.0)' : 'translateX(100vw) scale(0.9)'
-                }}
+                  '--idx': idx,
+                  // Desktop only base configuration
+                  transform: idx === 0 ? 'translateX(0px) scale(1.0)' : undefined
+                } as React.CSSProperties}
               >
                 {/* Big defining Icon: Centered */}
                 <div className={`w-20 h-20 rounded-full flex items-center justify-center border shrink-0 mx-auto ${

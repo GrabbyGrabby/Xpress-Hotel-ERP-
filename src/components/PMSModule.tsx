@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { 
   Building, Calendar, DollarSign, Users, FileText, CheckCircle2, ChevronRight 
 } from 'lucide-react';
@@ -18,6 +18,7 @@ export default function PMSModule() {
   const containerRef = useRef<HTMLDivElement>(null);
   const orbitRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
+  const [activeIdx, setActiveIdx] = useState(0);
 
   const nodes: PMSNode[] = [
     { id: 'res', name: 'Reservations Management', icon: Calendar, desc: 'Interactive check-in booking calendar with room auto-mapping, drag-and-drop availability overrides, and corporate group bookings.' },
@@ -60,50 +61,59 @@ export default function PMSModule() {
     const buttons = orbit.querySelectorAll('.pms-node-btn');
     const details = container.querySelectorAll('.pms-detail-block');
 
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: container,
-        pin: true,
-        scrub: 0.8, // Slightly faster feedback
-        start: 'top top',
-        end: '+=1800', // Significantly reduced from +=4500 to make scroll faster
-        invalidateOnRefresh: true,
-      }
+    let mm = gsap.matchMedia();
+
+    mm.add("(min-width: 1024px)", () => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: container,
+          pin: true,
+          scrub: 0.8,
+          start: 'top top',
+          end: '+=1800',
+          invalidateOnRefresh: true,
+        }
+      });
+
+      tl.fromTo(title,
+        { scale: 0.75, x: -50, opacity: 0 },
+        { scale: 1, x: 0, opacity: 1, duration: 1.8, ease: 'power2.out' }
+      );
+
+      tl.to(orbit, { rotation: 360, ease: 'none', duration: 8 }, 'rotate-start')
+        .to(buttons, { rotation: -360, ease: 'none', duration: 8 }, 'rotate-start');
+
+      details.forEach((block, idx) => {
+        const btn = buttons[idx];
+        const startOffset = idx * 1.5;
+
+        tl.to(btn, { scale: 1.25, backgroundColor: '#C6A75E', color: '#212842', duration: 0.8 }, `rotate-start+=${startOffset}`)
+          .fromTo(block, 
+            { opacity: 0, y: 30 },
+            { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' },
+            `rotate-start+=${startOffset}`
+          );
+
+        if (idx < details.length - 1) {
+          tl.to(btn, { scale: 1, backgroundColor: '#1F2A44', color: '#E8DCC8', duration: 0.5 }, `rotate-start+=${startOffset + 1.2}`)
+            .to(block, { opacity: 0, y: -20, duration: 0.5 }, `rotate-start+=${startOffset + 1.2}`);
+        }
+      });
     });
 
-    // 1. Left Title Zoom & Parallax Slide on Scroll
-    tl.fromTo(title,
-      { scale: 0.75, x: -50, opacity: 0 },
-      { scale: 1, x: 0, opacity: 1, duration: 1.8, ease: 'power2.out' }
-    );
-
-    // 2. Rotate orbit circle clockwise (360 degrees) and counter-rotate buttons to keep icons upright
-    tl.to(orbit, { rotation: 360, ease: 'none', duration: 8 }, 'rotate-start')
-      .to(buttons, { rotation: -360, ease: 'none', duration: 8 }, 'rotate-start');
-
-    // 3. Stagger-reveal description blocks on the right in sequence during the rotation
-    details.forEach((block, idx) => {
-      const btn = buttons[idx];
-      const startOffset = idx * 1.5;
-
-      // Active state highlight: scale up & change color
-      tl.to(btn, { scale: 1.25, backgroundColor: '#C6A75E', color: '#212842', duration: 0.8 }, `rotate-start+=${startOffset}`)
-        .fromTo(block, 
-          { opacity: 0, y: 30 },
-          { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' },
-          `rotate-start+=${startOffset}`
-        );
-
-      // Deactivate state transition (except last element)
-      if (idx < details.length - 1) {
-        tl.to(btn, { scale: 1, backgroundColor: '#1F2A44', color: '#E8DCC8', duration: 0.5 }, `rotate-start+=${startOffset + 1.2}`)
-          .to(block, { opacity: 0, y: -20, duration: 0.5 }, `rotate-start+=${startOffset + 1.2}`);
-      }
+    mm.add("(max-width: 1023px)", () => {
+      // Clear desktop animated styles on mobile so detail cards stack naturally
+      details.forEach((block) => {
+        gsap.set(block, { clearProps: "all" });
+      });
+      buttons.forEach((btn) => {
+        gsap.set(btn, { clearProps: "all" });
+      });
+      gsap.set(orbit, { clearProps: "all" });
     });
 
     return () => {
-      tl.scrollTrigger?.kill();
-      tl.kill();
+      mm.revert();
     };
   }, []);
 
@@ -111,7 +121,7 @@ export default function PMSModule() {
     <section 
       ref={containerRef}
       id="pms" 
-      className="h-screen flex flex-col justify-center bg-[#212842] text-[#F0E7D5] transition-colors duration-300 text-left relative overflow-hidden"
+      className="min-h-screen py-24 lg:py-0 lg:h-screen flex flex-col justify-center bg-[#212842] text-[#F0E7D5] transition-colors duration-300 text-left relative overflow-hidden"
     >
       <div className="absolute inset-0 bg-dots-mesh pointer-events-none opacity-10" />
       
@@ -147,8 +157,8 @@ export default function PMSModule() {
               ref={orbitRef}
               className="w-[260px] h-[260px] sm:w-[280px] sm:h-[280px] rounded-full border-2 border-dashed border-[#F0E7D5]/10 relative flex items-center justify-center"
             >
-              {/* Central base node */}
-              <div className="w-18 h-18 sm:w-20 sm:h-20 rounded-full bg-[#1F2A44] border border-[#F0E7D5]/15 shadow-md flex items-center justify-center font-display font-bold text-xs text-[#F0E7D5] uppercase select-none z-10">
+              {/* Central base node - Enlarged dark blur node, no border */}
+              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-[#1b2135]/85 backdrop-blur-md shadow-2xl flex items-center justify-center font-display font-black text-sm sm:text-base text-white uppercase tracking-widest select-none z-10">
                 Xpress
               </div>
 
@@ -162,27 +172,36 @@ export default function PMSModule() {
                 const NodeIcon = node.icon;
 
                 return (
-                  <div
+                  <button
                     key={node.id}
-                    className="pms-node-btn absolute w-11 h-11 sm:w-12 sm:h-12 rounded-full border flex items-center justify-center shadow-lg bg-[#1F2A44] border-[#F0E7D5]/15 text-[#E8DCC8] origin-center z-20"
+                    onClick={() => setActiveIdx(idx)}
+                    className={`pms-node-btn absolute w-11 h-11 sm:w-12 sm:h-12 rounded-full border flex items-center justify-center shadow-lg transition-all duration-300 origin-center z-20 cursor-pointer ${
+                      activeIdx === idx 
+                        ? 'bg-[#C6A75E] text-[#212842] border-[#C6A75E] scale-125' 
+                        : 'bg-[#1F2A44] border-[#F0E7D5]/15 text-[#E8DCC8]'
+                    }`}
                     style={{ 
                       left: `calc(50% + ${x}px - 22px)`,
                       top: `calc(50% + ${y}px - 22px)`
                     }}
                   >
                     <NodeIcon className="w-5 h-5 sm:w-5.5 sm:h-5.5" />
-                  </div>
+                  </button>
                 );
               })}
             </div>
           </div>
 
-          {/* Right Column: Big Active Content Blocks */}
-          <div className="lg:col-span-4 flex items-center h-[220px] relative">
+          {/* Right Column: Big Active Content Blocks (dynamic toggles for mobile, GSAP reveals on desktop) */}
+          <div className="lg:col-span-4 flex items-center min-h-[220px] relative">
             {nodes.map((node, idx) => (
               <div
                 key={node.id}
-                className="pms-detail-block absolute inset-0 flex flex-col justify-center opacity-0 translate-y-8"
+                className={`pms-detail-block flex flex-col justify-center transition-all duration-300 lg:transition-none lg:absolute lg:inset-0 ${
+                  activeIdx === idx 
+                    ? 'opacity-100 translate-y-0 relative z-10' 
+                    : 'opacity-0 translate-y-8 absolute pointer-events-none'
+                }`}
               >
                 <span className="text-[10px] font-bold text-[#C6A75E] uppercase tracking-[3px] block mb-1">
                   0{idx + 1} — Core Module

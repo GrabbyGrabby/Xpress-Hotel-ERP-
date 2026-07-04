@@ -24,13 +24,13 @@ export default function Integrations() {
     { name: 'Pine Labs', icon: Smartphone, color: '#2B124C', textColor: 'text-white' },
     { name: 'Easebuzz', icon: CreditCard, color: '#522B5B', textColor: 'text-white' },
     { name: 'Tally Prime', icon: Calculator, color: '#854F6C', textColor: 'text-white' },
-    { name: 'AWS Cloud', icon: Cloud, color: '#DFB6B2', textColor: 'text-[#212842]' },
-    { name: 'Zomato POS', icon: Utensils, color: '#FBE4D8', textColor: 'text-[#212842]' },
+    { name: 'AWS Cloud', icon: Cloud, color: '#1F2A44', textColor: 'text-[#F0E7D5]' },
+    { name: 'Zomato POS', icon: Utensils, color: '#17191D', textColor: 'text-white' },
     { name: 'Swiggy POS', icon: ShoppingBag, color: '#190019', textColor: 'text-white' },
     { name: 'eSSL Biometric', icon: Fingerprint, color: '#2B124C', textColor: 'text-white' },
     { name: 'Godrej Locks', icon: Key, color: '#522B5B', textColor: 'text-white' },
     { name: 'Go-MMT OTA', icon: Globe, color: '#854F6C', textColor: 'text-white' },
-    { name: 'Booking.com', icon: Compass, color: '#DFB6B2', textColor: 'text-[#212842]' }
+    { name: 'Booking.com', icon: Compass, color: '#1F2A44', textColor: 'text-[#F0E7D5]' }
   ];
 
   useEffect(() => {
@@ -40,47 +40,64 @@ export default function Integrations() {
     const cards = container.querySelectorAll('.integration-card');
     const title = titleRef.current;
 
-    // Timeline for vertical stacking partner capsules with faster scroll
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: container,
-        pin: true,
-        scrub: 0.8, // Snappier scrub damping
-        start: 'top top',
-        end: '+=1600', // Reduced scroll length to make it faster
-        invalidateOnRefresh: true,
+    let mm = gsap.matchMedia();
+
+    // Desktop: Pin and build a 3x3 grid on scroll
+    mm.add("(min-width: 1024px)", () => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: container,
+          pin: true,
+          scrub: 0.8,
+          start: 'top top',
+          end: '+=1800',
+          invalidateOnRefresh: true,
+        }
+      });
+
+      if (title) {
+        tl.fromTo(title,
+          { scale: 0.8, opacity: 0.3 },
+          { scale: 1, opacity: 1, duration: 1.0, ease: 'power2.out' }
+        );
       }
+
+      // Populating the grid layout on scroll
+      tl.fromTo(cards,
+        { scale: 0.8, opacity: 0, y: 40 },
+        {
+          scale: 1,
+          opacity: 1,
+          y: 0,
+          stagger: 0.2,
+          duration: 2.0,
+          ease: 'power3.out'
+        },
+        '-=0.5'
+      );
     });
 
-    // Zoom title on scroll
-    if (title) {
-      tl.fromTo(title,
-        { scale: 0.8, opacity: 0.3 },
-        { scale: 1, opacity: 1, duration: 1.0, ease: 'power2.out' }
-      );
-    }
-
-    // Staggered vertical stacking of pill capsules
-    cards.forEach((card, idx) => {
-      if (idx === 0) return; // Base card sits in place
-
-      // Slide up from bottom and stop to stack vertically
-      tl.fromTo(card,
-        { y: '100vh', scale: 0.95, rotate: idx % 2 === 0 ? 0.5 : -0.5 },
+    // Mobile: Simple scroll reveal fade in, no pinning
+    mm.add("(max-width: 1023px)", () => {
+      gsap.fromTo(cards,
+        { opacity: 0, y: 30 },
         {
-          y: idx * 22, // Vertical folder stack offset (22px shift per card)
-          scale: 1 - (cards.length - idx) * 0.003,
           opacity: 1,
-          duration: 1.2, // Reduced duration from 2.2 for faster transition
-          ease: 'power2.out'
-        },
-        '-=0.9' // Snappier overlap
+          y: 0,
+          stagger: 0.1,
+          duration: 1.0,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: container,
+            start: 'top 80%',
+            toggleActions: 'play none none none'
+          }
+        }
       );
     });
 
     return () => {
-      tl.scrollTrigger?.kill();
-      tl.kill();
+      mm.revert();
     };
   }, []);
 
@@ -88,55 +105,54 @@ export default function Integrations() {
     <section 
       ref={containerRef}
       id="integrations" 
-      className="h-screen flex flex-col justify-center items-center bg-[#212842] text-[#F0E7D5] transition-colors duration-300 text-left relative overflow-hidden"
+      className="min-h-screen py-24 lg:py-0 lg:h-screen flex flex-col justify-center items-center bg-[#212842] text-[#F0E7D5] transition-colors duration-300 text-left relative overflow-hidden select-none"
     >
       <div className="absolute inset-0 bg-dots-mesh pointer-events-none opacity-10" />
       
       {/* Centered Content Wrapper */}
-      <div className="flex flex-col items-center justify-center w-full max-w-5xl px-6 relative z-20">
+      <div className="flex flex-col items-center justify-center w-full max-w-6xl px-6 relative z-20">
         
         {/* Header Title - Centered */}
-        <div className="text-center mb-10">
+        <div className="text-center mb-12">
           <div className="text-[11px] font-bold uppercase tracking-[3px] text-[#C6A75E] mb-2">
-            04 — INTEGRATIONS
+            05 — INTEGRATIONS
           </div>
           <h2 
             ref={titleRef}
-            className="font-poppins text-5xl sm:text-7xl lg:text-[5vw] font-bold leading-none tracking-tighter text-white uppercase"
+            className="font-poppins text-4xl sm:text-6xl lg:text-[4.5vw] font-bold leading-none tracking-tighter text-white uppercase"
           >
             E-Invoice & Channel Sync
           </h2>
           <div className="w-16 h-[1px] bg-[#F0E7D5]/20 mx-auto mt-4" />
         </div>
 
-        {/* Vertical Stacking Deck Container - Aligned Vertically (w-80 h-20 capsule elements) */}
-        <div className="relative w-[320px] h-[220px] sm:w-[340px] sm:h-[240px] mx-auto mt-4">
+        {/* Stacking Deck Container on Mobile (relative box of height), 4x4 Grid on Desktop */}
+        <div className="relative w-72 h-[450px] lg:grid lg:grid-cols-4 lg:gap-6 lg:w-full lg:max-w-6xl lg:h-auto mx-auto mt-4 justify-items-center">
           {integrations.map((item, idx) => {
             const Icon = item.icon;
             return (
               <div
                 key={item.name}
-                className="integration-card absolute top-0 left-0 w-80 h-20 rounded-full shadow-2xl p-2.5 pr-8 flex items-center gap-4 border border-white/5 origin-center"
+                className="integration-card absolute lg:relative w-full max-w-[280px] h-20 rounded-full shadow-2xl p-2.5 pr-6 flex items-center gap-4 border border-white/5 origin-center shrink-0 lg:opacity-0"
                 style={{ 
                   backgroundColor: item.color,
                   zIndex: idx + 10,
-                  // First card sits at base, others start off-screen
-                  transform: idx === 0 ? 'translateY(0px) scale(1.0)' : 'translateY(100vh) scale(0.95)'
-                }}
+                  '--idx': idx
+                } as React.CSSProperties}
               >
-                {/* Left Circle Icon Container (with big icon) */}
+                {/* Left Circle Icon Container */}
                 <div className={`w-14 h-14 rounded-full flex items-center justify-center border shrink-0 ${
                   item.textColor === 'text-white' ? 'bg-white/20 border-white/20' : 'bg-black/10 border-black/10'
                 }`}>
                   <Icon className={`w-6 h-6 stroke-[1.5] ${item.textColor}`} />
                 </div>
 
-                {/* Big Clear Label: Main Focus */}
+                {/* Integration Details */}
                 <div className="flex flex-col text-left">
                   <span className={`font-poppins font-bold text-sm tracking-wider uppercase leading-none ${item.textColor}`}>
                     {item.name}
                   </span>
-                  <span className={`text-[8px] font-mono opacity-80 uppercase tracking-widest mt-1 font-semibold ${item.textColor}`}>
+                  <span className={`font-poppins text-[8px] opacity-80 uppercase tracking-widest mt-1 font-semibold ${item.textColor}`}>
                     INTEGRATION SYNCED
                   </span>
                 </div>
