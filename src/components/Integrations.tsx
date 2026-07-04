@@ -126,19 +126,17 @@ export default function Integrations() {
           <div className="w-16 h-[1px] bg-[#F0E7D5]/20 mx-auto mt-4" />
         </div>
 
-        {/* Stacking Deck Container on Mobile (relative box of height), 4x4 Grid on Desktop */}
-        <div className="relative w-72 h-[450px] lg:grid lg:grid-cols-4 lg:gap-6 lg:w-full lg:max-w-6xl lg:h-auto mx-auto mt-4 justify-items-center">
-          {integrations.map((item, idx) => {
+        {/* 4x4/4-Column Grid Layout on Desktop, Auto Wrap Flex on Mobile */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-6xl mx-auto justify-items-center">
+          {integrations.map((item) => {
             const Icon = item.icon;
             return (
               <div
                 key={item.name}
-                className="integration-card absolute lg:relative w-full max-w-[280px] h-20 rounded-full shadow-2xl p-2.5 pr-6 flex items-center gap-4 border border-white/5 origin-center shrink-0 lg:opacity-0"
+                className="integration-card w-full max-w-[280px] h-20 rounded-full shadow-2xl p-2.5 pr-6 flex items-center gap-4 border border-white/5 origin-center shrink-0 lg:opacity-0"
                 style={{ 
-                  backgroundColor: item.color,
-                  zIndex: idx + 10,
-                  '--idx': idx
-                } as React.CSSProperties}
+                  backgroundColor: item.color
+                }}
               >
                 {/* Left Circle Icon Container */}
                 <div className={`w-14 h-14 rounded-full flex items-center justify-center border shrink-0 ${
@@ -152,7 +150,7 @@ export default function Integrations() {
                   <span className={`font-poppins font-bold text-sm tracking-wider uppercase leading-none ${item.textColor}`}>
                     {item.name}
                   </span>
-                  <span className={`font-poppins text-[8px] opacity-80 uppercase tracking-widest mt-1 font-semibold ${item.textColor}`}>
+                  <span className={`text-[8px] font-mono opacity-80 uppercase tracking-widest mt-1 font-semibold ${item.textColor}`}>
                     INTEGRATION SYNCED
                   </span>
                 </div>

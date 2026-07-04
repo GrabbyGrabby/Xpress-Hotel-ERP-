@@ -90,15 +90,4 @@ body.dark-mode {
     transform: translateX(-50%) translateY(-10px) !important;
     z-index: 100 !important;
   }
-  .integration-card {
-    position: absolute !important;
-    top: calc(var(--idx) * 36px) !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s;
-  }
-  .integration-card:hover {
-    transform: translateX(-50%) translateY(-8px) !important;
-    z-index: 100 !important;
-  }
 }

@@ -157,8 +157,8 @@ export default function PMSModule() {
               ref={orbitRef}
               className="w-[260px] h-[260px] sm:w-[280px] sm:h-[280px] rounded-full border-2 border-dashed border-[#F0E7D5]/10 relative flex items-center justify-center"
             >
-              {/* Central base node - Enlarged dark blur node, no border */}
-              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-[#1b2135]/85 backdrop-blur-md shadow-2xl flex items-center justify-center font-display font-black text-sm sm:text-base text-white uppercase tracking-widest select-none z-10">
+              {/* Central base node - Enlarged and styled with gold border */}
+              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gradient-to-tr from-[#1F2A44] to-[#2A354D] border-2 border-[#C6A75E] shadow-[0_0_20px_rgba(198,167,94,0.3)] flex items-center justify-center font-display font-black text-sm sm:text-base text-white uppercase tracking-widest select-none z-10">
                 Xpress
               </div>
 
@@ -175,10 +175,10 @@ export default function PMSModule() {
                   <button
                     key={node.id}
                     onClick={() => setActiveIdx(idx)}
-                    className={`pms-node-btn absolute w-11 h-11 sm:w-12 sm:h-12 rounded-full border flex items-center justify-center shadow-lg transition-all duration-300 origin-center z-20 cursor-pointer ${
+                    className={`pms-node-btn absolute w-11 h-11 sm:w-12 sm:h-12 rounded-full border-0 flex items-center justify-center shadow-xl backdrop-blur-md transition-all duration-300 origin-center z-20 cursor-pointer ${
                       activeIdx === idx 
-                        ? 'bg-[#C6A75E] text-[#212842] border-[#C6A75E] scale-125' 
-                        : 'bg-[#1F2A44] border-[#F0E7D5]/15 text-[#E8DCC8]'
+                        ? 'bg-[#C6A75E] text-[#212842] scale-125' 
+                        : 'bg-black/60 text-white hover:bg-black/80'
                     }`}
                     style={{ 
                       left: `calc(50% + ${x}px - 22px)`,

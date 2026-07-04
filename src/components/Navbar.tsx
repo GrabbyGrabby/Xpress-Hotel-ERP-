@@ -44,11 +44,11 @@ export default function Navbar({ isDark, setIsDark }: NavbarProps) {
         
         {/* Desktop Links (Hidden on mobile) */}
         <div className="hidden lg:flex gap-6 items-center">
-          <a href="#segments" className="font-poppins text-[11px] font-bold uppercase tracking-wider text-[#212842]/80 dark:text-[#F0E7D5]/80 hover:text-[var(--accent)] transition-colors">Segments</a>
-          <a href="#pms" className="font-poppins text-[11px] font-bold uppercase tracking-wider text-[#212842]/80 dark:text-[#F0E7D5]/80 hover:text-[var(--accent)] transition-colors">PMS</a>
-          <a href="#restaurant" className="font-poppins text-[11px] font-bold uppercase tracking-wider text-[#212842]/80 dark:text-[#F0E7D5]/80 hover:text-[var(--accent)] transition-colors">POS</a>
-          <a href="#revenue-yield" className="font-poppins text-[11px] font-bold uppercase tracking-wider text-[#212842]/80 dark:text-[#F0E7D5]/80 hover:text-[var(--accent)] transition-colors">Revenue Yield</a>
-          <a href="#integrations" className="font-poppins text-[11px] font-bold uppercase tracking-wider text-[#212842]/80 dark:text-[#F0E7D5]/80 hover:text-[var(--accent)] transition-colors">Channel Sync</a>
+          <a href="#segments" className="text-[11px] font-bold uppercase tracking-wider text-[#212842]/80 dark:text-[#F0E7D5]/80 hover:text-[var(--accent)] transition-colors">Segments</a>
+          <a href="#pms" className="text-[11px] font-bold uppercase tracking-wider text-[#212842]/80 dark:text-[#F0E7D5]/80 hover:text-[var(--accent)] transition-colors">PMS</a>
+          <a href="#restaurant" className="text-[11px] font-bold uppercase tracking-wider text-[#212842]/80 dark:text-[#F0E7D5]/80 hover:text-[var(--accent)] transition-colors">POS</a>
+          <a href="#revenue-yield" className="text-[11px] font-bold uppercase tracking-wider text-[#212842]/80 dark:text-[#F0E7D5]/80 hover:text-[var(--accent)] transition-colors">Revenue Yield</a>
+          <a href="#integrations" className="text-[11px] font-bold uppercase tracking-wider text-[#212842]/80 dark:text-[#F0E7D5]/80 hover:text-[var(--accent)] transition-colors">Channel Sync</a>
         </div>
 
         {/* Action Controls (Theme switch + Hamburger) */}
@@ -79,14 +79,14 @@ export default function Navbar({ isDark, setIsDark }: NavbarProps) {
       {/* Mobile Menu Overlay Dropdown */}
       {menuOpen && (
         <div className="fixed inset-x-5 top-24 z-[99] p-6 rounded-3xl bg-white/95 dark:bg-[#1a2135]/95 backdrop-blur-2xl border border-black/5 dark:border-white/10 shadow-2xl flex flex-col gap-4 select-none lg:hidden animate-float duration-[8000ms]">
-          <span className="font-poppins text-[10px] font-bold text-[#C6A75E] uppercase tracking-wider block border-b border-black/5 dark:border-white/5 pb-2">
+          <span className="text-[10px] font-bold text-[#C6A75E] uppercase tracking-wider block border-b border-black/5 dark:border-white/5 pb-2">
             Navigation Menu:
           </span>
-          <a onClick={handleLinkClick} href="#segments" className="font-poppins text-sm font-bold uppercase tracking-wider text-[#212842] dark:text-[#F0E7D5] hover:text-[var(--accent)] transition-colors py-1">Segments</a>
-          <a onClick={handleLinkClick} href="#pms" className="font-poppins text-sm font-bold uppercase tracking-wider text-[#212842] dark:text-[#F0E7D5] hover:text-[var(--accent)] transition-colors py-1">PMS Module</a>
-          <a onClick={handleLinkClick} href="#restaurant" className="font-poppins text-sm font-bold uppercase tracking-wider text-[#212842] dark:text-[#F0E7D5] hover:text-[var(--accent)] transition-colors py-1">Restaurant POS</a>
-          <a onClick={handleLinkClick} href="#revenue-yield" className="font-poppins text-sm font-bold uppercase tracking-wider text-[#212842] dark:text-[#F0E7D5] hover:text-[var(--accent)] transition-colors py-1">Revenue Yield Sync</a>
-          <a onClick={handleLinkClick} href="#integrations" className="font-poppins text-sm font-bold uppercase tracking-wider text-[#212842] dark:text-[#F0E7D5] hover:text-[var(--accent)] transition-colors py-1">Channel Sync</a>
+          <a onClick={handleLinkClick} href="#segments" className="text-sm font-bold uppercase tracking-wider text-[#212842] dark:text-[#F0E7D5] hover:text-[var(--accent)] transition-colors py-1">Segments</a>
+          <a onClick={handleLinkClick} href="#pms" className="text-sm font-bold uppercase tracking-wider text-[#212842] dark:text-[#F0E7D5] hover:text-[var(--accent)] transition-colors py-1">PMS Module</a>
+          <a onClick={handleLinkClick} href="#restaurant" className="text-sm font-bold uppercase tracking-wider text-[#212842] dark:text-[#F0E7D5] hover:text-[var(--accent)] transition-colors py-1">Restaurant POS</a>
+          <a onClick={handleLinkClick} href="#revenue-yield" className="text-sm font-bold uppercase tracking-wider text-[#212842] dark:text-[#F0E7D5] hover:text-[var(--accent)] transition-colors py-1">Revenue Yield Sync</a>
+          <a onClick={handleLinkClick} href="#integrations" className="text-sm font-bold uppercase tracking-wider text-[#212842] dark:text-[#F0E7D5] hover:text-[var(--accent)] transition-colors py-1">Channel Sync</a>
         </div>
       )}
     </>

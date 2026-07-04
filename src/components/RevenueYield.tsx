@@ -75,9 +75,9 @@ export default function RevenueYield() {
         scrollTrigger: {
           trigger: container,
           pin: true,
-          scrub: 0.3,
+          scrub: 0.8,
           start: 'top top',
-          end: '+=400',
+          end: '+=1600',
           invalidateOnRefresh: true,
         }
       });
@@ -85,7 +85,7 @@ export default function RevenueYield() {
       if (title) {
         tl.fromTo(title,
           { scale: 0.8, opacity: 0.3 },
-          { scale: 1, opacity: 1, duration: 0.6, ease: 'power2.out' }
+          { scale: 1, opacity: 1, duration: 1.0, ease: 'power2.out' }
         );
       }
 
@@ -95,11 +95,11 @@ export default function RevenueYield() {
           scale: 1,
           opacity: 1,
           y: 0,
-          stagger: 0.1,
-          duration: 1.0,
+          stagger: 0.25,
+          duration: 2.0,
           ease: 'power3.out'
         },
-        '-=0.3'
+        '-=0.5'
       );
     });
 
